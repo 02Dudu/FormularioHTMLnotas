@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formulário</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+
+    h2 {
+      margin-top: 20px;
+      text-align: center;
+      color: #333;
+    }
+
+    form {
+      max-width: 400px;
+      margin: 0 auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      color: #555;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      width: calc(100% - 16px);
+      padding: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+    }
+
+    button {
+      width: calc(100% - 16px);
+      padding: 10px;
+      background-color: #007bff;
+      border: none;
+      border-radius: 3px;
+      color: #fff;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    th,
+    td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+      width: 20%;
+      /* Largura fixa para cada célula */
+    }
+
+    th {
+      background-color: #f2f2f2;
+      font-weight: bold;
+    }
+
+    .aprovado {
+      color: #4caf50;
+      font-weight: bold;
+    }
+
+    .reprovado {
+      color: #f44336;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h2>Formulário</h2>
+
+  <form id="formulario">
+    <label for="nome">Nome:</label>
+    <input type="text" id="nome" name="nome" required>
+
+    <label for="matricula">Matrícula:</label>
+    <input type="text" id="matricula" name="matricula" required>
+
+    <label for="nota1">Nota 1:</label>
+    <input type="number" id="nota1" name="nota1" required>
+
+    <label for="nota2">Nota 2:</label>
+    <input type="number" id="nota2" name="nota2" required>
+
+    <button type="button" onclick="enviarFormulario()" id="enviarBtn" disabled>Enviar</button>
+  </form>
+
+  <div id="historico"></div>
+
+  <script>
+    var historicoDados = [];
+    var nomeInput = document.getElementById("nome");
+    var matriculaInput = document.getElementById("matricula");
+    var nota1Input = document.getElementById("nota1");
+    var nota2Input = document.getElementById("nota2");
+    var enviarBtn = document.getElementById("enviarBtn");
+
+    nomeInput.oninput = validarCampos;
+    matriculaInput.oninput = validarCampos;
+    nota1Input.oninput = validarCampos;
+    nota2Input.oninput = validarCampos;
+
+    function validarCampos() {
+      if (nomeInput.value.trim() !== "" && matriculaInput.value.trim() !== "" && nota1Input.value.trim() !== "" && nota2Input.value.trim() !== "") {
+        enviarBtn.disabled = false;
+      } else {
+        enviarBtn.disabled = true;
+      }
+    }
+
+    function enviarFormulario() {
+      var nome = nomeInput.value;
+      var matricula = matriculaInput.value;
+      var nota1 = parseFloat(nota1Input.value);
+      var nota2 = parseFloat(nota2Input.value);
+      var media = (nota1 + nota2) / 2; // Calcula a média
+      var situacao = media >= 5 ? "APROVADO" : "REPROVADO"; // Determina a situação do aluno
+
+      var dados = {
+        nome: nome,
+        matricula: matricula,
+        nota1: nota1,
+        nota2: nota2,
+        media: media.toFixed(2), // Arredonda a média para 2 casas decimais
+        situacao: situacao
+      };
+
+      historicoDados.push(dados);
+
+      // Envia os dados para o histórico
+      atualizarHistorico();
+    }
+
+    function atualizarHistorico() {
+      var historico = document.getElementById("historico");
+      historico.innerHTML = "";
+
+      historicoDados.forEach(function (dados) {
+        var tabela = document.createElement("table");
+        var cabecalho = tabela.createTHead();
+        var linhaCabecalho = cabecalho.insertRow();
+        var celulaNome = linhaCabecalho.insertCell(0);
+        var celulaMatricula = linhaCabecalho.insertCell(1);
+        var celulaNota1 = linhaCabecalho.insertCell(2);
+        var celulaNota2 = linhaCabecalho.insertCell(3);
+        var celulaMedia = linhaCabecalho.insertCell(4); // Nova célula para a média
+        var celulaSituacao = linhaCabecalho.insertCell(5); // Nova célula para a situação
+
+        celulaNome.textContent = "Nome";
+        celulaMatricula.textContent = "Matrícula";
+        celulaNota1.textContent = "Nota 1";
+        celulaNota2.textContent = "Nota 2";
+        celulaMedia.textContent = "Média"; // Título da coluna de média
+        celulaSituacao.textContent = "Situação"; // Título da coluna de situação
+
+        var corpoTabela = tabela.createTBody();
+        var linhaDados = corpoTabela.insertRow();
+        var celulaNomeDados = linhaDados.insertCell(0);
+        var celulaMatriculaDados = linhaDados.insertCell(1);
+        var celulaNota1Dados = linhaDados.insertCell(2);
+        var celulaNota2Dados = linhaDados.insertCell(3);
+        var celulaMediaDados = linhaDados.insertCell(4); // Nova célula para a média
+        var celulaSituacaoDados = linhaDados.insertCell(5); // Nova célula para a situação
+
+        celulaNomeDados.textContent = dados.nome;
+        celulaMatriculaDados.textContent = dados.matricula;
+        celulaNota1Dados.textContent = dados.nota1;
+        celulaNota2Dados.textContent = dados.nota2;
+        celulaMediaDados.textContent = dados.media; // Preenche a célula de média com o valor calculado
+        celulaSituacaoDados.textContent = dados.situacao; // Preenche a célula de situação com o valor correspondente
+
+        if (dados.situacao === "APROVADO") {
+          celulaSituacaoDados.classList.add("aprovado");
+        } else {
+          celulaSituacaoDados.classList.add("reprovado");
+        }
+
+        historico.appendChild(tabela);
+      });
+    }
+  </script>
+
+</body>
+
+</html>
